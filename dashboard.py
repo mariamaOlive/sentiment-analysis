@@ -13,7 +13,7 @@ st.title('Reviews da Amazon - Firestick TV')
 def load_data():
     df = pd.read_csv("reviews_v2.csv")
     df = df[df["reviews"].notna()]
-    df["class"] = df["stars"].apply(lambda x : 1 if x >=4 else 0)
+    df["class"] = df["stars"].apply(lambda x : "Positiva" if x >=4 else "Negativa")
     df["dates"] = pd.to_datetime(df["dates"])
     return df
 
@@ -33,13 +33,19 @@ data = load_data()
 # wordcloud = load_wordcloud(data)
 data_load_state.text("Done! (using st.cache)")
 
-st.subheader('Raw data')
-st.write(data)
+# st.subheader('Raw data')
+# st.write(data)
 
 ### Plot Time Series - Reviews ###
 st.subheader('Número de reviews')
 df_count_reviews = pd.DataFrame({'count' : data.groupby( [ "dates", "class"] ).size()}).reset_index()
-fig = px.line(df_count_reviews, x="dates", y="count", color='class')
+fig = px.line(df_count_reviews, x="dates", y="count", color='class',
+                labels={
+                        "dates": "Data",
+                        "count": "Número de reviews",
+                        "class": "Tipo de review"
+                        },
+                        title="Reviews no tempo")
 st.plotly_chart(fig)
 
 
