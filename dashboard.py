@@ -6,7 +6,10 @@ import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from nltk.corpus import stopwords
 
+# Use the full page instead of a narrow central column
+st.set_page_config(layout="wide")
 
+# Set page title
 st.title('Reviews da Amazon - Firestick TV')
 
 @st.cache
@@ -36,8 +39,11 @@ data_load_state.text("Done! (using st.cache)")
 # st.subheader('Raw data')
 # st.write(data)
 
+col1, col2= st.columns(2)
+
 ### Plot Time Series - Reviews ###
-st.subheader('Número de reviews')
+# st.subheader('Número de reviews')
+col1.header("Reviews no tempo")
 df_count_reviews = pd.DataFrame({'count' : data.groupby( [ "dates", "class"] ).size()}).reset_index()
 fig = px.line(df_count_reviews, x="dates", y="count", color='class',
                 labels={
@@ -46,11 +52,12 @@ fig = px.line(df_count_reviews, x="dates", y="count", color='class',
                         "class": "Tipo de review"
                         },
                         title="Reviews no tempo")
-st.plotly_chart(fig)
+col1.plotly_chart(fig)
 
 
 ### Plot Wordcloud ###
-st.subheader('Wordcloud')
+# st.subheader('Wordcloud')
+col2.header("Wordcloud")
 data_load_state = st.text('Loading data...')
 lista_rev = data["reviews"].tolist()
 big_string = (" ").join(lista_rev)
@@ -59,7 +66,7 @@ wordcloud = WordCloud(stopwords=stopwords, background_color="white", max_words=2
 fig = plt.figure(figsize=[20,10])
 plt.imshow(wordcloud, interpolation='bilinear')
 plt.axis("off")
-st.pyplot(fig)
+col2.pyplot(fig)
 data_load_state.text("")
 
 
