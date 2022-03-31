@@ -20,6 +20,18 @@ def load_data():
     df["dates"] = pd.to_datetime(df["dates"])
     return df
 
+@st.cache
+def load_pred():
+    df = pd.read_csv("best_pred.csv")
+    df["pred"] = df["pred"].apply(lambda x : "Positiva" if x == 1 else "Negativa")
+    df["dates"] = pd.to_datetime(df["dates"])
+    return df
+
+@st.cache
+def load_rep():
+    df = pd.read_csv("reviews_rep.csv")
+    return df
+
 # @st.cache
 # def load_wordcloud(data):
 #     lista_rev = data["reviews"].tolist()
@@ -33,17 +45,19 @@ def load_data():
 
 data_load_state = st.text('Loading data...')
 data = load_data()
+data_pred = load_pred()
+data_rep = load_rep()
 # wordcloud = load_wordcloud(data)
 data_load_state.text("Done! (using st.cache)")
 
 # st.subheader('Raw data')
 # st.write(data)
 
-col1, col2= st.columns(2)
+col1, col2 = st.columns(2)
 
 ### Plot Time Series - Reviews ###
 # st.subheader('Número de reviews')
-col1.header("Reviews no tempo")
+col1.header("Reviews no tempo - Original")
 df_count_reviews = pd.DataFrame({'count' : data.groupby( [ "dates", "class"] ).size()}).reset_index()
 fig = px.line(df_count_reviews, x="dates", y="count", color='class',
                 labels={
@@ -54,22 +68,41 @@ fig = px.line(df_count_reviews, x="dates", y="count", color='class',
                         title="Reviews no tempo")
 col1.plotly_chart(fig)
 
+col2.header("Reviews no tempo - Predições")
+df_count_reviews = pd.DataFrame({'count' : data_pred.groupby( [ "dates", "pred"] ).size()}).reset_index()
+fig2 = px.line(df_count_reviews, x="dates", y="count", color='pred',
+                labels={
+                        "dates": "Data",
+                        "count": "Número de reviews",
+                        "pred": "Tipo de review"
+                        },
+                        title="Reviews no tempo")
+col2.plotly_chart(fig2)
 
 ### Plot Wordcloud ###
 # st.subheader('Wordcloud')
-col2.header("Wordcloud")
+st.header("Wordcloud")
 data_load_state = st.text('Loading data...')
 lista_rev = data["reviews"].tolist()
 big_string = (" ").join(lista_rev)
 stopwords = stopwords.words('portuguese')
 wordcloud = WordCloud(stopwords=stopwords, background_color="white", max_words=200, contour_width=3, width=800, height=400).generate(big_string)
-fig = plt.figure(figsize=[20,10])
+fig3 = plt.figure(figsize=[20,10])
 plt.imshow(wordcloud, interpolation='bilinear')
 plt.axis("off")
-col2.pyplot(fig)
+st.pyplot(fig3)
 data_load_state.text("")
 
+#st.header("Reviews mais representativos")
+#st.write(data_rep)
 
+st.header("Reviews mais representativos")
+st.subheader("Negativos")
+st.write(data_rep["negativo"][0])
+st.write(data_rep["negativo"][1])
+st.subheader("Positivos")
+st.write(data_rep["positivo"][0])
+st.write(data_rep["positivo"][1])
 
 # hist_values = np.histogram(
 #     #data[""].dt.hour, bins=24, range=(0,24))[0]
