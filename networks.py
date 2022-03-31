@@ -38,6 +38,8 @@ def get_test_metrics(model, test_data, test_label):
 
     print(confusion_matrix(test_label, result))
 
+    return result 
+
 
 def plot_graphs(history, metric):
   plt.plot(history.history[metric])
@@ -76,6 +78,7 @@ def model_builder_cnn(encoder, hp):
     tf.keras.layers.Conv1D(filters=32, kernel_size=8, activation='relu'),
     tf.keras.layers.MaxPool1D(pool_size=2),
     tf.keras.layers.Dropout(rate=hp_dropout_rate),
+    tf.keras.layers.Flaten(),
     # tf.keras.layers.Dense(units=hp_units, activation='relu'), #>>>>>Hiperparametro
     tf.keras.layers.GlobalMaxPool1D(),
     tf.keras.layers.Dense(1, activation='sigmoid')
@@ -90,7 +93,7 @@ def model_builder_cnn(encoder, hp):
 
 
 ### LSTM functions ###
-#Function builds CNN model to tuner
+#Function builds LSTM model to tuner
 def model_builder_lstm(encoder, hp):
 
     # hp_units = hp.Int('units', min_value=32, max_value=512, step=32)
