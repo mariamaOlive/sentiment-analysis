@@ -66,7 +66,7 @@ def model_builder(encoder, hp):
     hp_dropout_rate = hp.Float('dropout_1', min_value=0.0, max_value=0.5, default=0.25, step=0.05)
     hp_learning_rate = hp.Choice('learning_rate', values=[1e-2, 1e-3, 1e-4])
 
-    model_CNN_0 = tf.keras.Sequential([
+    model = tf.keras.Sequential([
     encoder,
     tf.keras.layers.Embedding(
         input_dim=len(encoder.get_vocabulary()),
@@ -82,15 +82,17 @@ def model_builder(encoder, hp):
     ])
 
 
-    model_CNN_0.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+    model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
               optimizer=tf.keras.optimizers.Adam(learning_rate=hp_learning_rate), #>>>>>Hiperparametro
               metrics=['accuracy'])
 
-    return model_CNN_0
+    return model
 
+
+### Tuner functions ###
 
 #Funtion creates Keras Tuner 
-def cnn_tuner(encoder, project_name):
+def network_tuner(encoder, project_name):
     build_model = partial(model_builder, encoder)
 
     # Instantiate the tuner
@@ -103,8 +105,8 @@ def cnn_tuner(encoder, project_name):
 
     return tuner
 
-#Function searches best CNN
-def search_cnn(tuner, train_data, train_labels, valid_data, valid_labels):
+#Function searches best network
+def search_network(tuner, train_data, train_labels, valid_data, valid_labels):
 
     #Print search space
     print(tuner.search_space_summary())
@@ -118,5 +120,4 @@ def search_cnn(tuner, train_data, train_labels, valid_data, valid_labels):
     best_hp = tuner.get_best_hyperparameters()[0]
 
     return best_hp 
-
 
