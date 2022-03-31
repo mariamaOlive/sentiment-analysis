@@ -78,7 +78,7 @@ def model_builder_cnn(encoder, hp):
     tf.keras.layers.Conv1D(filters=32, kernel_size=8, activation='relu'),
     tf.keras.layers.MaxPool1D(pool_size=2),
     tf.keras.layers.Dropout(rate=hp_dropout_rate),
-    tf.keras.layers.Flaten(),
+    # tf.keras.layers.Flatten(),
     # tf.keras.layers.Dense(units=hp_units, activation='relu'), #>>>>>Hiperparametro
     tf.keras.layers.GlobalMaxPool1D(),
     tf.keras.layers.Dense(1, activation='sigmoid')

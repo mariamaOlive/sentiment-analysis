@@ -65,7 +65,7 @@ def get_test_metrics(model, ds_test, y_test):
     # labels = ['Negative','Positive'] #(0:negative, 1:positive)
     label = tf.argmax(tf_prediction, axis=1)
     label_pred = label.numpy()
-    print(label_pred)
+    # print(label_pred)
 
     print(classification_report(y_test, label_pred))
 

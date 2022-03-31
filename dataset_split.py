@@ -7,7 +7,7 @@ def split_data(df, oversampled=False):
     X = df[["reviews_pipeline_0", "reviews_pipeline_1", "class"]]
     y = df["class"]
     X_train_valid, X_test, y_train_valid, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
-    X_train, X_valid, y_train, y_valid = train_test_split(X_train_valid, y_train_valid, test_size = 0.3, random_state = 42, stratify=y_train_valid)
+    X_train, X_valid, y_train, y_valid = train_test_split(X_train_valid, y_train_valid, test_size = 0.2, random_state = 42, stratify=y_train_valid)
 
     if oversampled:
         X_train = perform_oversample(X_train)
