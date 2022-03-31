@@ -9,10 +9,10 @@ import matplotlib.pyplot as plt
 #Function that encodes the sequence in order to feed the network
 def sentence_encoder(data, vocab_size=1000):
 
-    encoder_0 = tf.keras.layers.TextVectorization(max_tokens=vocab_size, standardize=None)
-    encoder_0.adapt(data)
+    encoder = tf.keras.layers.TextVectorization(max_tokens=vocab_size, standardize=None)
+    encoder.adapt(data)
 
-    return encoder_0
+    return encoder
 
 
 #Function return a model given a tuner and its parametes
@@ -60,7 +60,7 @@ def plot_acuracy_loss(history):
 ### CNN functions ###
 
 #Function builds CNN model to tuner
-def model_builder(encoder, hp):
+def model_builder_cnn(encoder, hp):
 
     # hp_units = hp.Int('units', min_value=32, max_value=512, step=32)
     hp_dropout_rate = hp.Float('dropout_1', min_value=0.0, max_value=0.5, default=0.25, step=0.05)
@@ -89,11 +89,45 @@ def model_builder(encoder, hp):
     return model
 
 
+### LSTM functions ###
+#Function builds CNN model to tuner
+def model_builder_lstm(encoder, hp):
+
+    # hp_units = hp.Int('units', min_value=32, max_value=512, step=32)
+    hp_dropout_rate = hp.Float('dropout_1', min_value=0.0, max_value=0.5, default=0.25, step=0.05)
+    hp_learning_rate = hp.Choice('learning_rate', values=[1e-2, 1e-3, 1e-4])
+
+    model =  tf.keras.Sequential([
+    encoder,
+    tf.keras.layers.Embedding(
+        input_dim=len(encoder.get_vocabulary()),
+        output_dim=64,
+        # Use masking to handle the variable sequence lengths
+        mask_zero=True),
+    tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(64)),
+    tf.keras.layers.Dropout(rate=hp_dropout_rate),
+    # tf.keras.layers.Dense(units=hp_units, activation='relu'),
+    tf.keras.layers.Dense(1, activation='sigmoid')
+    ])
+
+
+    model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+              optimizer=tf.keras.optimizers.Adam(learning_rate=hp_learning_rate), #>>>>>Hiperparametro
+              metrics=['accuracy'])
+
+    return model
+
+
 ### Tuner functions ###
 
 #Funtion creates Keras Tuner 
-def network_tuner(encoder, project_name):
-    build_model = partial(model_builder, encoder)
+def network_tuner(type, encoder, project_name):
+
+    build_model = None
+    if type == "cnn":
+        build_model = partial(model_builder_cnn, encoder)
+    else:
+        build_model = partial(model_builder_lstm, encoder)
 
     # Instantiate the tuner
     tuner = kt.Hyperband(build_model, # the hypermodel
