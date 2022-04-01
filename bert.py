@@ -3,11 +3,30 @@ from transformers import BertTokenizer
 import tensorflow as tf
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
+import matplotlib.pyplot as plt
 
 # can be up to 512 for BERT
 MAX_LENGTH = 256
 BATCH_SIZE = 1
 tokenizer = BertTokenizer.from_pretrained('neuralmind/bert-base-portuguese-cased', do_lower_case=True)
+
+def plot_graphs(history, metric):
+  plt.plot(history.history[metric])
+  plt.plot(history.history['val_'+metric], '')
+  plt.xlabel("Epochs")
+  plt.ylabel(metric)
+  plt.legend([metric, 'val_'+metric])
+
+
+def plot_acuracy_loss(history):
+    plt.figure(figsize=(16, 8))
+    plt.subplot(1, 2, 1)
+    plot_graphs(history, 'accuracy')
+    plt.ylim(None, 1)
+    plt.subplot(1, 2, 2)
+    plot_graphs(history, 'loss')
+    plt.ylim(0, None)
+
 
 def convert_example_to_feature(review):
     return tokenizer.encode_plus(review,
