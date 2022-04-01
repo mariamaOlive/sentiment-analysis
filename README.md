@@ -1,1 +1,1 @@
-# residencia-mineracao
+# Projeto Mineração de Dados
