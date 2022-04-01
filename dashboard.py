@@ -14,7 +14,7 @@ st.title('Reviews da Amazon - Firestick TV')
 
 @st.cache
 def load_data():
-    df = pd.read_csv("reviews_v2.csv")
+    df = pd.read_csv("data/reviews_v2.csv")
     df = df[df["reviews"].notna()]
     df["class"] = df["stars"].apply(lambda x : "Positiva" if x >=4 else "Negativa")
     df["dates"] = pd.to_datetime(df["dates"])
@@ -22,20 +22,20 @@ def load_data():
 
 @st.cache
 def load_pred():
-    df = pd.read_csv("best_pred.csv")
+    df = pd.read_csv("data/best_pred.csv")
     df["pred"] = df["pred"].apply(lambda x : "Positiva" if x == 1 else "Negativa")
     df["dates"] = pd.to_datetime(df["dates"])
     return df
 
 @st.cache
 def load_rep():
-    df = pd.read_csv("reviews_rep.csv")
+    df = pd.read_csv("data/reviews_rep.csv")
     df
     return df
 
 @st.cache
 def load_metrics():
-    df = pd.read_csv("metrics.csv").drop("predictions", axis=1)
+    df = pd.read_csv("data/metrics.csv").drop("predictions", axis=1)
     return df
 
 #Loading data
