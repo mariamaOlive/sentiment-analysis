@@ -1,7 +1,0 @@
-channels:
-  - anaconda
-dependencies:
-  - pandas
-  - plotly
-  - wordcloud
-  - numpy
