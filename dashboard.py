@@ -2,7 +2,6 @@ import streamlit as st
 import plotly.express as px
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 
 # Use the full page instead of a narrow central column

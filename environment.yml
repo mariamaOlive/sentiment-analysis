@@ -4,5 +4,4 @@ dependencies:
   - pandas
   - plotly
   - wordcloud
-  - matplotlib
   - numpy
